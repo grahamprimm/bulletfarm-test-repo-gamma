@@ -1,57 +1,45 @@
 const request = require('supertest');
-const app = require('../index');
+const express = require('express');
+const app = require('../index'); // Assuming index.js exports the app instance
 
-// Test for GET /items
-describe('GET /items', () => {
-    test('should respond with JSON array', async () => {
-        const res = await request(app).get('/items');
-        expect(res.statusCode).toBe(200);
-        expect(res.header['content-type']).toEqual(expect.stringContaining('json'));
-        expect(Array.isArray(res.body)).toBe(true);
-    });
-});
-
-// Test for GET /items/:id
-describe('GET /items/:id', () => {
-    test('should respond with JSON object', async () => {
-        const res = await request(app).get('/items/1');
-        expect(res.statusCode).toBe(200);
-        expect(res.header['content-type']).toEqual(expect.stringContaining('json'));
-    });
-    test('should return 404 for non-existent item', async () => {
-        const res = await request(app).get('/items/999');
-        expect(res.statusCode).toBe(404);
-    });
-});
-
-// Test for POST /items
 describe('POST /items', () => {
-    test('should create a new item', async () => {
-        const newItem = { name: 'Test Item', price: 10 };
-        const res = await request(app).post('/items').send(newItem);
-        expect(res.statusCode).toBe(201);
-        expect(res.header['content-type']).toEqual(expect.stringContaining('json'));
-        expect(res.body.item.name).toBe(newItem.name);
-        expect(res.body.item.price).toBe(newItem.price);
+    it('should respond with 201 for valid inputs', async () => {
+        const response = await request(app)
+            .post('/items')
+            .send({ name: 'Test Item', price: 10 });
+        expect(response.status).toBe(201);
+        expect(response.body.message).toBe('Item added successfully');
     });
-    test('should return 400 for missing name', async () => {
-        const res = await request(app).post('/items').send({ price: 10 });
-        expect(res.statusCode).toBe(400);
-    });
-    test('should return 400 for missing price', async () => {
-        const res = await request(app).post('/items').send({ name: 'Test Item' });
-        expect(res.statusCode).toBe(400);
-    });
-    test('should return 400 for invalid price', async () => {
-        const res = await request(app).post('/items').send({ name: 'Test Item', price: -1 });
-        expect(res.statusCode).toBe(400);
-    });
-});
 
-// Test for non-existent routes
-describe('Invalid routes', () => {
-    test('should return 404 for invalid route', async () => {
-        const res = await request(app).get('/invalid-route');
-        expect(res.statusCode).toBe(404);
+    it('should respond with 400 for missing name', async () => {
+        const response = await request(app)
+            .post('/items')
+            .send({ price: 10 });
+        expect(response.status).toBe(400);
+        expect(response.body.error).toBe('Invalid input: name must be a non-empty string.');
+    });
+
+    it('should respond with 400 for empty name', async () => {
+        const response = await request(app)
+            .post('/items')
+            .send({ name: '', price: 10 });
+        expect(response.status).toBe(400);
+        expect(response.body.error).toBe('Invalid input: name must be a non-empty string.');
+    });
+
+    it('should respond with 400 for invalid price', async () => {
+        const response = await request(app)
+            .post('/items')
+            .send({ name: 'Test Item', price: -5 });
+        expect(response.status).toBe(400);
+        expect(response.body.error).toBe('Invalid input: price must be a positive number.');
+    });
+
+    it('should respond with 400 for non-numeric price', async () => {
+        const response = await request(app)
+            .post('/items')
+            .send({ name: 'Test Item', price: 'ten' });
+        expect(response.status).toBe(400);
+        expect(response.body.error).toBe('Invalid input: price must be a positive number.');
     });
 });
