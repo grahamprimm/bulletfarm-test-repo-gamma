@@ -29,3 +29,13 @@ The API endpoint `POST /items` requires the following fields in the request body
 - `price`: a mandatory positive number that represents the price of the item.
 
 If the validation fails, the server responds with a 400 status code and a descriptive error message.
+
+## ## ## API Validation
+### Input Validation
+
+The API endpoint `POST /items` requires the following fields in the request body:
+
+- `name`: a mandatory string that represents the name of the item.
+- `price`: a mandatory positive number that represents the price of the item.
+
+If the validation fails, the server responds with a 400 status code and a descriptive error message.
