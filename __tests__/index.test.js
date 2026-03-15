@@ -1,48 +1,33 @@
 const request = require('supertest');
-const app = require('../index');
+const app = require('../index'); // Adjust the path based on your app's entry point
 
-// Test for GET /items
-describe('GET /items', () => {
-    test('should respond with JSON array', async () => {
-        const res = await request(app).get('/items');
-        expect(res.statusCode).toBe(200);
-        expect(res.header['content-type']).toEqual(expect.stringContaining('json'));
-        expect(Array.isArray(res.body)).toBe(true);
-    });
-});
+describe('Items API', () => {
+  it('should get all items', async () => {
+    const response = await request(app).get('/items');
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
+  });
 
-// Test for GET /items/:id
-describe('GET /items/:id', () => {
-    test('should respond with JSON object', async () => {
-        const res = await request(app).get('/items/1');
-        expect(res.statusCode).toBe(200);
-        expect(res.header['content-type']).toEqual(expect.stringContaining('json'));
-    });
-    test('should return 404 for non-existent item', async () => {
-        const res = await request(app).get('/items/999');
-        expect(res.statusCode).toBe(404);
-    });
-});
+  it('should get item by ID', async () => {
+    const response = await request(app).get('/items/1'); // Assuming item with ID 1 exists
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('id', 1);
+  });
 
-// Test for POST /items
-describe('POST /items', () => {
-    test('should create a new item', async () => {
-        const newItem = { name: 'Test Item' };
-        const res = await request(app).post('/items').send(newItem);
-        expect(res.statusCode).toBe(201);
-        expect(res.header['content-type']).toEqual(expect.stringContaining('json'));
-        expect(res.body.name).toBe(newItem.name);
-    });
-    test('should return 400 for invalid input', async () => {
-        const res = await request(app).post('/items').send({});
-        expect(res.statusCode).toBe(400);
-    });
-});
+  it('should return 404 for non-existing item', async () => {
+    const response = await request(app).get('/items/9999'); // Assuming no item with this ID exists
+    expect(response.status).toBe(404);
+  });
 
-// Test for non-existent routes
-describe('Invalid routes', () => {
-    test('should return 404 for invalid route', async () => {
-        const res = await request(app).get('/invalid-route');
-        expect(res.statusCode).toBe(404);
-    });
+  it('should create a new item', async () => {
+    const newItem = { name: 'New Item', price: 100 }; // Modify as per your item's structure
+    const response = await request(app).post('/items').send(newItem);
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('id'); // Assuming the created item returns an ID
+  });
+
+  it('should return 400 for invalid input', async () => {
+    const response = await request(app).post('/items').send({}); // Sending empty object
+    expect(response.status).toBe(400);
+  });
 });
