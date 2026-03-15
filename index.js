@@ -2,6 +2,38 @@
 
 const express = require('express');
 const app = express();
+const port = 3000;
+
+app.use(express.json());
+
+// Input validation middlewareunction validateItem(req, res, next) {
+    const { name, price } = req.body;
+    if (typeof name !== 'string' || name.trim() === '') {
+        return res.status(400).json({ error: 'Invalid input: name is required and should be a string.' });
+    }
+    if (typeof price !== 'number' || price <= 0) {
+        return res.status(400).json({ error: 'Invalid input: price is required and should be a positive number.' });
+    }
+    next();
+}
+
+app.post('/items', validateItem, (req, res) => {
+    // Assuming items are processed here
+    res.status(201).send('Item created successfully.');
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something went wrong!');
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});'use strict';
+
+const express = require('express');
+const app = express();
 app.use(express.json());
 
 // Input validation middleware for POST /items
