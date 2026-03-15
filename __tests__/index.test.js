@@ -27,14 +27,23 @@ describe('GET /items/:id', () => {
 // Test for POST /items
 describe('POST /items', () => {
     test('should create a new item', async () => {
-        const newItem = { name: 'Test Item' };
+        const newItem = { name: 'Test Item', price: 10 };
         const res = await request(app).post('/items').send(newItem);
         expect(res.statusCode).toBe(201);
         expect(res.header['content-type']).toEqual(expect.stringContaining('json'));
-        expect(res.body.name).toBe(newItem.name);
+        expect(res.body.item.name).toBe(newItem.name);
+        expect(res.body.item.price).toBe(newItem.price);
     });
-    test('should return 400 for invalid input', async () => {
-        const res = await request(app).post('/items').send({});
+    test('should return 400 for missing name', async () => {
+        const res = await request(app).post('/items').send({ price: 10 });
+        expect(res.statusCode).toBe(400);
+    });
+    test('should return 400 for missing price', async () => {
+        const res = await request(app).post('/items').send({ name: 'Test Item' });
+        expect(res.statusCode).toBe(400);
+    });
+    test('should return 400 for invalid price', async () => {
+        const res = await request(app).post('/items').send({ name: 'Test Item', price: -1 });
         expect(res.statusCode).toBe(400);
     });
 });
