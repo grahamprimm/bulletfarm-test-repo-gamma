@@ -9,13 +9,16 @@ Test Node.js API for bulletfarm agent operator testing.
 ## ## API Endpoints
 ### POST /items
 
-This endpoint adds a new item. It requires the following parameters in the request body:
+This endpoint allows you to add an item. The request body must contain the following fields:
 
-- `name` (string, required): The name of the item.
-- `price` (number, required): The price of the item. Must be a positive number.
+- **name** (string): The name of the item. It cannot be empty.
+- **price** (number): The price of the item. It must be a positive number.
 
-#### Validation Errors
-If the input validation fails, the server will respond with a 400 status and a JSON object containing an `errors` array with specific error messages.
+#### Responses
+- **201 Created**: If the item is added successfully.
+- **400 Bad Request**: If the input validation fails with descriptive error messages. 
+
+
 
 ## ## API Validation
 ### Input Validation
