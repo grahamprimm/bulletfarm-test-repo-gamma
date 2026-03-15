@@ -1,4 +1,34 @@
-'use strict';
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+// Input validation middleware
+const validateItem = (req, res, next) => {
+    const { name, price } = req.body;
+    if (typeof name !== 'string' || name.trim() === '') {
+        return res.status(400).json({ error: 'Name is required and must be a string.' });
+    }
+    if (typeof price !== 'number' || price <= 0) {
+        return res.status(400).json({ error: 'Price must be a positive number.' });
+    }
+    next();
+};
+
+app.post('/items', validateItem, (req, res) => {
+    // Process the valid item here
+    res.status(201).send('Item added successfully.');
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});'use strict';
 
 const express = require('express');
 const app = express();
