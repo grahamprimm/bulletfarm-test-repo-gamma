@@ -4,6 +4,44 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
+// Input validation middleware
+const validateItem = (req, res, next) => {
+    const { name, price } = req.body;
+    
+    if (typeof name !== 'string' || name.trim() === '') {
+        return res.status(400).json({ error: 'Invalid input: name must be a non-empty string.' });
+    }
+    
+    if (typeof price !== 'number' || price <= 0) {
+        return res.status(400).json({ error: 'Invalid input: price must be a positive number.' });
+    }
+    
+    next();
+};
+
+// POST /items route
+app.post('/items', validateItem, (req, res) => {
+    const { name, price } = req.body;
+    // Assuming items is an array defined somewhere to hold items
+    items.push({ name, price });
+    res.status(201).json({ message: 'Item created successfully.' });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+
 let items = [
   { id: 1, name: 'Widget', price: 9.99 },
   { id: 2, name: 'Gadget', price: 24.99 },
