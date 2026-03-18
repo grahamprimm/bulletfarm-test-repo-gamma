@@ -1,6 +1,41 @@
 const request = require('supertest');
-const express = require('express');
-const app = require('../index'); // Assuming index.js exports the app instance
+const app = require('../index'); // assuming you export your app in index.js
+
+describe('Logging Middleware', () => {
+    it('should log request details', async () => {
+        const response = await request(app).get('/'); // Adjust this to an actual route
+        expect(response.status).toBe(200); // Adjust the expected status based on your implementation
+        // Check console output or log storage if necessary
+    });
+});
+const app = require('../index'); // Ensure to import your app
+
+describe('Logging Middleware', () => {
+    it('should log requests and respond correctly', async () => {
+        const response = await request(app)
+            .post('/items')
+            .set('x-request-id', 'test-request-id')
+            .send({ name: 'Test Item', price: 10 });
+        expect(response.status).toBe(201);
+        expect(response.body).toEqual({ message: 'Item added successfully', item: { name: 'Test Item', price: 10 }});
+    });
+
+    it('should return 400 for invalid name', async () => {
+        const response = await request(app)
+            .post('/items')
+            .send({ name: '', price: 10 });
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual({ error: 'Invalid input: name must be a non-empty string.' });
+    });
+
+    it('should return 400 for invalid price', async () => {
+        const response = await request(app)
+            .post('/items')
+            .send({ name: 'Test Item', price: -5 });
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual({ error: 'Invalid input: price must be a positive number.' });
+    });
+});
 
 describe('POST /items', () => {
     it('should respond with 201 for valid inputs', async () => {
