@@ -76,3 +76,15 @@ The API includes a logging middleware that logs all incoming requests in JSON fo
 - **statusCode**: The HTTP response status code.
 - **responseTime**: The time taken to process the request in milliseconds.
 - **requestId**: An identifier for the request (can be passed in the `x-request-id` header).
+
+## ## Logging Middleware
+### Request Logging
+
+This application includes a logging middleware for the Express API that logs all incoming requests in JSON format. The log entries include the following information:
+
+- **timestamp**: The time the request was received.
+- **method**: The HTTP method used for the request (GET, POST, etc.).
+- **path**: The endpoint that was hit.
+- **statusCode**: The HTTP status code of the response.
+- **responseTime**: The time taken to process the request in milliseconds.
+- **requestId**: A unique identifier for the request.

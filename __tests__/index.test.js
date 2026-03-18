@@ -1,4 +1,13 @@
 const request = require('supertest');
+const app = require('../index'); // assuming you export your app in index.js
+
+describe('Logging Middleware', () => {
+    it('should log request details', async () => {
+        const response = await request(app).get('/'); // Adjust this to an actual route
+        expect(response.status).toBe(200); // Adjust the expected status based on your implementation
+        // Check console output or log storage if necessary
+    });
+});
 const app = require('../index'); // Ensure to import your app
 
 describe('Logging Middleware', () => {
