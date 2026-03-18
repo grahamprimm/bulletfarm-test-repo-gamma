@@ -60,3 +60,16 @@ The API endpoint `POST /items` requires the following fields in the request body
 - `price`: a mandatory positive number that represents the price of the item.
 
 If the validation fails, the server responds with a 400 status code and a descriptive error message.
+
+## ## Running Tests
+To run the tests for the Express API, use the following command:
+
+```bash
+npm test
+```
+
+The tests will cover the following endpoints:
+- GET /items
+- GET /items/:id
+- POST /items
+- Error cases for 404 and invalid input.

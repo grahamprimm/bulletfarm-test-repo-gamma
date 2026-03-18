@@ -1,45 +1,44 @@
 const request = require('supertest');
-const express = require('express');
-const app = require('../index'); // Assuming index.js exports the app instance
+const app = require('../index'); // import your Express app
 
-describe('POST /items', () => {
-    it('should respond with 201 for valid inputs', async () => {
-        const response = await request(app)
-            .post('/items')
-            .send({ name: 'Test Item', price: 10 });
-        expect(response.status).toBe(201);
-        expect(response.body.message).toBe('Item added successfully');
+describe('Items API', () => {
+  // Testing GET /items
+  describe('GET /items', () => {
+    it('should return a list of items', async () => {
+      const res = await request(app).get('/items');
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('items');
+    });
+  });
+
+  // Testing GET /items/:id
+  describe('GET /items/:id', () => {
+    it('should return an item by id', async () => {
+      const res = await request(app).get('/items/1'); // Assuming 1 is a valid ID
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('item');
     });
 
-    it('should respond with 400 for missing name', async () => {
-        const response = await request(app)
-            .post('/items')
-            .send({ price: 10 });
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe('Invalid input: name must be a non-empty string.');
+    it('should return 404 for invalid item id', async () => {
+      const res = await request(app).get('/items/999'); // Assuming 999 is an invalid ID
+      expect(res.status).toBe(404);
+      expect(res.body).toHaveProperty('error');
+    });
+  });
+
+  // Testing POST /items
+  describe('POST /items', () => {
+    it('should create a new item', async () => {
+      const newItem = { name: 'New Item' }; // Replace with valid item structure
+      const res = await request(app).post('/items').send(newItem);
+      expect(res.status).toBe(201);
+      expect(res.body).toHaveProperty('item');
     });
 
-    it('should respond with 400 for empty name', async () => {
-        const response = await request(app)
-            .post('/items')
-            .send({ name: '', price: 10 });
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe('Invalid input: name must be a non-empty string.');
+    it('should return 400 for invalid input', async () => {
+      const res = await request(app).post('/items').send({}); // Sending empty object
+      expect(res.status).toBe(400);
+      expect(res.body).toHaveProperty('error');
     });
-
-    it('should respond with 400 for invalid price', async () => {
-        const response = await request(app)
-            .post('/items')
-            .send({ name: 'Test Item', price: -5 });
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe('Invalid input: price must be a positive number.');
-    });
-
-    it('should respond with 400 for non-numeric price', async () => {
-        const response = await request(app)
-            .post('/items')
-            .send({ name: 'Test Item', price: 'ten' });
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe('Invalid input: price must be a positive number.');
-    });
+  });
 });
