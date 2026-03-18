@@ -65,3 +65,17 @@ If the validation fails, the server responds with a 400 status code and a descri
 ## ## Error Handling
 
 The API includes error handling middleware that catches unexpected errors and responds with a 500 status code and a generic error message.
+
+## API Versions
+# API Versions
+
+This API supports versioning. Available versions:
+
+- **/v1** - Basic version of the API.
+- **/v2** - Enhanced version of the API with metadata in responses.
+
+### Root Endpoint
+
+GET `/`
+
+Lists available API versions.
