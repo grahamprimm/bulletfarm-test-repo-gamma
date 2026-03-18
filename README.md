@@ -42,6 +42,7 @@ If the validation fails, the server responds with a 400 status code and a descri
 
 ## ## ## API Endpoints
 ### POST /items
+### POST /items
 
 This endpoint allows you to add an item. The request body must contain the following fields:
 
@@ -60,3 +61,7 @@ The API endpoint `POST /items` requires the following fields in the request body
 - `price`: a mandatory positive number that represents the price of the item.
 
 If the validation fails, the server responds with a 400 status code and a descriptive error message.
+
+## ## Error Handling
+
+The API includes error handling middleware that catches unexpected errors and responds with a 500 status code and a generic error message.
