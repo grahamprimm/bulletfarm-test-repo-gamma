@@ -29,6 +29,27 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Something went wrong!' });
 });
 
+// Logging middleware
+const logger = (req, res, next) => {
+    const start = Date.now();
+    const requestId = req.headers['x-request-id'] || 'N/A';
+
+    res.on('finish', () => {
+        const responseTime = Date.now() - start;
+        console.log(JSON.stringify({
+            timestamp: new Date().toISOString(),
+            method: req.method,
+            path: req.originalUrl,
+            statusCode: res.statusCode,
+            responseTime,
+            requestId,
+        }));
+    });
+    next();
+};
+
+app.use(logger);
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

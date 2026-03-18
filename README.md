@@ -65,3 +65,14 @@ If the validation fails, the server responds with a 400 status code and a descri
 ## ## Error Handling
 
 The API includes error handling middleware that catches unexpected errors and responds with a 500 status code and a generic error message.
+
+## API Documentation
+## Logging Middleware
+
+The API includes a logging middleware that logs all incoming requests in JSON format. The log includes the following fields:
+- **timestamp**: The time when the request was received.
+- **method**: The HTTP method of the request.
+- **path**: The request URL path.
+- **statusCode**: The HTTP response status code.
+- **responseTime**: The time taken to process the request in milliseconds.
+- **requestId**: An identifier for the request (can be passed in the `x-request-id` header).
