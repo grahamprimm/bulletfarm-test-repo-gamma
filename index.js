@@ -1,35 +1,40 @@
 const express = require('express');
 const app = express();
-app.use(express.json());
-
-// Input validation middleware
-function validateItem(req, res, next) {
-    const { name, price } = req.body;
-    // Check for valid name
-    if (typeof name !== 'string' || name.trim() === '') {
-        return res.status(400).json({ error: 'Invalid input: name must be a non-empty string.' });
-    }
-    // Check for valid price
-    if (typeof price !== 'number' || price <= 0) {
-        return res.status(400).json({ error: 'Invalid input: price must be a positive number.' });
-    }
-    next();
-}
-
-// POST /items route
-app.post('/items', validateItem, (req, res) => {
-    const { name, price } = req.body;
-    // Assume we save the item here
-    res.status(201).json({ message: 'Item added successfully', item: { name, price } });
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err);
-    res.status(500).json({ error: 'Something went wrong!' });
-});
-
 const PORT = process.env.PORT || 3000;
+
+// Middleware to generate request ID
+const { v4: uuidv4 } = require('uuid');
+app.use((req, res, next) => {
+    req.requestId = uuidv4();
+    next();
+});
+
+// Root endpoint to list available API versions
+app.get('/', (req, res) => {
+    res.json({ versions: ['/v1', '/v2'] });
+});
+
+// v1 Routes
+const v1Router = express.Router();
+v1Router.get('/items', (req, res) => {
+    // handle v1 get items
+    res.json({ message: 'v1 Items retrieved.' });
+});
+app.use('/v1', v1Router);
+
+// v2 Routes
+const v2Router = express.Router();
+v2Router.get('/items', (req, res) => {
+    const metadata = {
+        version: 'v2',
+        timestamp: new Date().toISOString(),
+        request_id: req.requestId
+    };
+    // handle v2 get items
+    res.json({ message: 'v2 Items retrieved.', metadata });
+});
+app.use('/v2', v2Router);
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
